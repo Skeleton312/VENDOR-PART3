@@ -179,34 +179,34 @@ class ShippingStatus extends Component
     }
 
     public function render()
-    {
-        $query = Shipping::with(['purchaseDetail', 'project', 'vendor', 'customer'])
-            ->when($this->search, function($q) {
-                $q->where(function($query) {
-                    $query->whereHas('customer', function($q) {
-                        $q->where('customer_name', 'like', '%' . $this->search . '%');
-                    })->orWhereHas('vendor', function($q) {
-                        $q->where('vendor_name', 'like', '%' . $this->search . '%');
-                    });
+{
+    $query = Shipping::with(['purchaseDetail', 'project', 'vendor', 'customer'])
+        ->when($this->search, function($q) {
+            $q->where(function($query) {
+                $query->whereHas('customer', function($q) {
+                    $q->where('customer_name', 'like', '%' . $this->search . '%');
+                })->orWhereHas('vendor', function($q) {
+                    $q->where('vendor_name', 'like', '%' . $this->search . '%');
                 });
-            })
-            ->when($this->statusFilter, function($q) {
-                $q->where('shipping_status', $this->statusFilter);
-            })
-            ->when($this->projectFilter, function($q) {
-                $q->where('project_id', $this->projectFilter);
-            })
-            ->when($this->vendorFilter, function($q) {
-                $q->where('vendor_id', $this->vendorFilter);
-            })
-            ->latest();
+            });
+        })
+        ->when($this->statusFilter, function($q) {
+            $q->where('shipping_status', $this->statusFilter);
+        })
+        ->when($this->projectFilter, function($q) {
+            $q->where('project_id', $this->projectFilter);
+        })
+        ->when($this->vendorFilter, function($q) {
+            $q->where('vendor_id', $this->vendorFilter);
+        })
+        ->orderBy('shipping_id', 'desc'); // Ganti ordering menggunakan shipping_id
 
-        return view('livewire.sales.shipping-status', [
-            'shippings' => $query->paginate(10),
-            'purchaseDetails' => PurchaseDetail::all(),
-            'projects' => Project::all(),
-            'vendors' => Vendor::all(),
-            'customers' => Customer::all()
-        ]);
-    }
+    return view('livewire.sales.shipping-status', [
+        'shippings' => $query->paginate(10),
+        'purchaseDetails' => PurchaseDetail::all(),
+        'projects' => Project::all(),
+        'vendors' => Vendor::all(),
+        'customers' => Customer::all()
+    ]);
+}
 }

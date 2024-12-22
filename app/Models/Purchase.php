@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+// app/Models/Purchase.php
 class Purchase extends Model
 {
     protected $primaryKey = 'purchase_id';
@@ -16,9 +17,17 @@ class Purchase extends Model
         'purchase_date',
         'status'
     ];
+}
 
-    public function purchaseDetails()
-    {
-        return $this->hasMany(PurchaseDetail::class, 'purchase_id', 'purchase_id');
-    }
+class PurchaseDetail extends Model
+{
+    protected $primaryKey = 'purchase_detail_id';
+    
+    protected $fillable = [
+        'purchase_id',
+        'product_id',
+        'quantity',
+        'subtotal',
+        'updated_at'
+    ];
 }

@@ -8,6 +8,10 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Livewire\WithPagination;
+use App\Models\Purchase;
+use App\Models\PurchaseDetail;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectListCustomer extends Component
 {
@@ -116,7 +120,43 @@ class ProjectListCustomer extends Component
             return $matchesSearch && $matchesStatus && $matchesDate;
         });
     }
+    public function createPurchase($projectId)
+{
+    try {
+        $project = Project::with(['products'])->findOrFail($projectId);
+        
+        // Create Purchase
+        $purchase = Purchase::create([
+            'vendor_id' => $project->vendor_id,
+            'user_id' => Auth::id(),
+            'project_id' => $project->project_id,
+            'total_amount' => $project->project_value,
+            'purchase_date' => now(),
+            'status' => 'Pending'
+        ]);
 
+        // Create Purchase Details menggunakan DB Query Builder
+        foreach ($project->products as $product) {
+            DB::table('purchase_details')->insert([
+                'purchase_id' => $purchase->purchase_id,
+                'product_id' => $product->product_id,
+                'quantity' => $product->pivot->quantity,
+                'subtotal' => $product->pivot->subtotal
+            ]);
+        }
+
+        $this->dispatch('flash-message', 'Purchase created successfully!');
+    } catch (\Exception $e) {
+        $this->dispatch('flash-message', 'Error creating purchase: ' . $e->getMessage());
+    }
+}
+    
+    protected function checkPurchaseStatus($project)
+    {
+        return Purchase::where('project_id', $project->project_id)
+            ->latest()
+            ->first();
+    }
     public function render()
     {
         $user = Auth::user();
