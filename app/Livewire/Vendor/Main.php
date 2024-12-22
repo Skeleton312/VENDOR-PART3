@@ -25,24 +25,23 @@ class Main extends Component
     public $vendor_email;
     public $vendor_phone;
     public $vendor_address;
-    public $user_name;
-    public $user_email;
     public $password;
     public $password_confirmation;
+    public $showPassword = false;  // untuk password
+public $showConfirmPassword = false;  // untuk confirm password
     public $notification = [
         'show' => false,
         'message' => ''
     ];
 
     protected $rules = [
-        'user_name' => 'required|string|min:3',
-        'user_email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8|confirmed',
         'vendor_name' => 'required|min:3',
-        'vendor_email' => 'required|email',
+        'vendor_email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed',
         'vendor_phone' => 'required',
         'vendor_address' => 'required',
     ];
+
 
     public function openModal($vendorId = null)
     {
@@ -67,17 +66,17 @@ class Main extends Component
     }
 
     public function resetForm()
-    {
-        $this->vendorId = null;
-        $this->user_name = '';
-        $this->user_email = '';
-        $this->password = '';
-        $this->password_confirmation = '';
-        $this->vendor_name = '';
-        $this->vendor_email = '';
-        $this->vendor_phone = '';
-        $this->vendor_address = '';
-    }
+{
+    $this->vendorId = null;
+    $this->vendor_name = '';
+    $this->vendor_email = '';
+    $this->vendor_phone = '';
+    $this->vendor_address = '';
+    $this->password = '';
+    $this->password_confirmation = '';
+    $this->showPassword = false;
+    $this->showConfirmPassword = false;
+} 
 
     public function save()
     {
@@ -94,12 +93,11 @@ class Main extends Component
                     'vendor_address' => $this->vendor_address,
                 ]);
 
-                // Update user if email changed
-                if ($vendor->user->email !== $this->vendor_email) {
-                    $vendor->user->update([
-                        'email' => $this->vendor_email
-                    ]);
-                }
+                // Update user with same email and name
+                $vendor->user->update([
+                    'name' => $this->vendor_name,
+                    'email' => $this->vendor_email
+                ]);
 
                 $message = 'Vendor updated successfully';
             } else {
@@ -108,8 +106,8 @@ class Main extends Component
 
                 // Create new user
                 $user = User::create([
-                    'name' => $this->user_name,
-                    'email' => $this->user_email,
+                    'name' => $this->vendor_name, // Gunakan vendor_name
+                    'email' => $this->vendor_email, // Gunakan vendor_email
                     'password' => Hash::make($this->password),
                     'role' => 'Vendor',
                     'status' => 'Active'

@@ -108,6 +108,14 @@ class ProjectList extends Component
         'quantities.*.integer' => 'Jumlah produk harus berupa angka bulat',
         'quantities.*.min' => 'Jumlah produk minimal 1',
     ];
+    private function initializeProjectStatus()
+    {
+        $projects = Project::all();
+        foreach ($projects as $project) {
+            $this->selectedStatus[$project->project_id] = $this->calculateProjectStatus($project);
+            $this->progress[$project->project_id] = $this->calculateProgress($project);
+        }
+    }
 
     public function mount()
     {
@@ -116,14 +124,8 @@ class ProjectList extends Component
         $this->initializeProjectStatus();
     }
 
-    private function initializeProjectStatus()
-    {
-        $projects = Project::all();
-        foreach ($projects as $project) {
-            $this->selectedStatus[$project->project_id] = $project->status ?? 'Pending';
-            $this->progress[$project->project_id] = $this->calculateProgress($project);
-        }
-    }
+   
+
 
     private function calculateProgress($project)
     {
@@ -131,22 +133,12 @@ class ProjectList extends Component
         $endDate = Carbon::parse($project->project_duration_end);
         $now = Carbon::now();
     
-        // Jika proyek sudah selesai
-        if ($project->status === 'Completed') {
-            return 100;
-        }
-    
-        // Jika proyek masih pending
-        if ($project->status === 'Pending') {
-            return 0;
-        }
-    
         // Jika belum dimulai
         if ($now < $startDate) {
             return 0;
         }
     
-        // Jika sudah melewati tanggal selesai
+        // Jika sudah selesai
         if ($now > $endDate) {
             return 100;
         }
@@ -158,6 +150,26 @@ class ProjectList extends Component
         return min(100, round(($daysElapsed / $totalDays) * 100));
     }
 
+    private function calculateProjectStatus($project)
+    {
+        $startDate = Carbon::parse($project->project_duration_start);
+        $endDate = Carbon::parse($project->project_duration_end);
+        $today = Carbon::now();
+    
+        // Project belum dimulai
+        if ($today < $startDate) {
+            return 'Pending';
+        }
+        
+        // Project sudah selesai
+        if ($today > $endDate) {
+            return 'Selesai';
+        }
+    
+        // Project sedang berjalan
+        return 'Dalam Pengerjaan';
+    }
+    
     public function updatedSelectedProducts($value, $productId)
     {
         if ($value) {
@@ -293,7 +305,7 @@ class ProjectList extends Component
 
         try {
             DB::beginTransaction();
-
+    
             $projectData = [
                 'vendor_id' => $this->vendor_id,
                 'customer_id' => $this->customer_id,
@@ -302,10 +314,10 @@ class ProjectList extends Component
                 'project_value' => $this->total_value,
                 'project_duration_start' => $this->project_duration_start,
                 'project_duration_end' => $this->project_duration_end,
-                'project_detail' => $this->project_detail,
-                'status' => $this->project_status
+                'project_detail' => $this->project_detail
+                // Hapus status karena sekarang ditentukan berdasarkan tanggal
             ];
-
+    
             if ($this->editMode) {
                 $project = Project::findOrFail($this->project_id);
                 $project->update($projectData);
@@ -340,11 +352,11 @@ class ProjectList extends Component
             ]);
 
             DB::commit();
-            
-            $this->dispatch('project-saved', $this->editMode ? 
-                'Project updated successfully!' : 
-                'Project created successfully!');
-            $this->closeModal();
+        
+        $this->dispatch('project-saved', $this->editMode ? 
+            'Project updated successfully!' : 
+            'Project created successfully!');
+        $this->closeModal();
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -434,18 +446,18 @@ class ProjectList extends Component
     public function render()
     {
         $query = Project::with(['vendor', 'customer', 'products'])
-            ->when($this->search, function($q) {
-                $q->where(function($query) {
-                    $query->where('project_header', 'like', '%' . $this->search . '%')
-                          ->orWhere('project_detail', 'like', '%' . $this->search . '%')
-                          ->orWhereHas('vendor', function($q) {
-                              $q->where('vendor_name', 'like', '%' . $this->search . '%');
-                          })
-                          ->orWhereHas('customer', function($q) {
-                              $q->where('customer_name', 'like', '%' . $this->search . '%');
-                          });
-                });
-            })
+        ->when($this->search, function($q) {
+            $q->where(function($query) {
+                $query->where('project_header', 'like', '%' . $this->search . '%')
+                      ->orWhere('project_detail', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('vendor', function($q) {
+                          $q->where('vendor_name', 'like', '%' . $this->search . '%');
+                      })
+                      ->orWhereHas('customer', function($q) {
+                          $q->where('customer_name', 'like', '%' . $this->search . '%');
+                      });
+            });
+        })
             ->when($this->vendorFilter, function($q) {
                 $q->where('vendor_id', $this->vendorFilter);
             })
@@ -453,7 +465,20 @@ class ProjectList extends Component
                 $q->where('customer_id', $this->customerFilter);
             })
             ->when($this->statusFilter, function($q) {
-                $q->where('status', $this->statusFilter);
+                // Filter berdasarkan tanggal untuk menentukan status
+                $now = Carbon::now();
+                switch($this->statusFilter) {
+                    case 'Pending':
+                        $q->where('project_duration_start', '>', $now);
+                        break;
+                    case 'Dalam Pengerjaan':
+                        $q->where('project_duration_start', '<=', $now)
+                          ->where('project_duration_end', '>', $now);
+                        break;
+                    case 'Selesai':
+                        $q->where('project_duration_end', '<=', $now);
+                        break;
+                }
             })
             ->when($this->dateFilter, function($q) {
                 $q->whereDate('project_duration_start', '<=', $this->dateFilter)

@@ -44,8 +44,8 @@
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     <option value="">Semua Status</option>
                     <option value="Pending">Pending</option>
-                    <option value="In Progress">Dalam Pengerjaan</option>
-                    <option value="Completed">Selesai</option>
+                    <option value="Dalam Pengerjaan">Dalam Pengerjaan</option>
+                    <option value="Selesai">Selesai</option>
                 </select>
             </div>
             <div>
@@ -127,13 +127,16 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">
                                     <div class="font-medium">{{ $project->customer->customer_name }}</div>
-                                    <div class="text-gray-500">{{ $project->vendor->vendor_name ?? 'Tidak Ada Vendor' }}</div>
+                                    <div class="text-gray-500">{{ $project->vendor->vendor_name ?? 'Tidak Ada Vendor' }}
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">
-                                    <div>{{ Carbon\Carbon::parse($project->project_duration_start)->format('d M Y') }}</div>
-                                    <div>{{ Carbon\Carbon::parse($project->project_duration_end)->format('d M Y') }}</div>
+                                    <div>{{ Carbon\Carbon::parse($project->project_duration_start)->format('d M Y') }}
+                                    </div>
+                                    <div>{{ Carbon\Carbon::parse($project->project_duration_end)->format('d M Y') }}
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
@@ -144,7 +147,7 @@
                                             <div class="w-full bg-gray-200 rounded-full h-2">
                                                 <div class="h-2 rounded-full transition-all duration-500 
                                                     @php
-                                                        $now = now();
+$now = now();
                                                         $start = \Carbon\Carbon::parse($project->project_duration_start);
                                                         $end = \Carbon\Carbon::parse($project->project_duration_end);
                                                         
@@ -170,8 +173,7 @@
                                                             echo 'bg-yellow-600';
                                                         } else {
                                                             echo 'bg-blue-600';
-                                                        }
-                                                    @endphp"
+                                                        } @endphp"
                                                     style="width: {{ $progress }}%">
                                                 </div>
                                             </div>
@@ -180,18 +182,18 @@
                                             </span>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Timeline Info -->
                                     <div class="text-sm text-gray-600">
                                         @php
                                             if ($now < $start) {
                                                 $daysToStart = $now->diffInDays($start);
-                                                echo "Dimulai dalam " . round($daysToStart) . " hari";
+                                                echo 'Dimulai dalam ' . round($daysToStart) . ' hari';
                                             } elseif ($now > $end) {
-                                                echo "Selesai";
+                                                echo 'Selesai';
                                             } else {
                                                 $daysRemaining = $now->diffInDays($end);
-                                                echo "Tersisa " . round($daysRemaining) . " hari";
+                                                echo 'Tersisa ' . round($daysRemaining) . ' hari';
                                             }
                                         @endphp
                                     </div>
@@ -238,7 +240,8 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
                 <div class="fixed inset-0 z-10 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
-                        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-xl">
+                        <div
+                            class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-xl">
                             <form wire:submit="save">
                                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                     <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">
@@ -304,12 +307,14 @@
                                             </label>
                                             <div class="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                                 @foreach ($products as $product)
-                                                    <div class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
+                                                    <div
+                                                        class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded">
                                                         <input type="checkbox"
                                                             wire:model.live="selectedProducts.{{ $product->product_id }}"
                                                             class="rounded border-gray-300">
                                                         <label class="flex-1">
-                                                            <span class="font-medium">{{ $product->product_name }}</span>
+                                                            <span
+                                                                class="font-medium">{{ $product->product_name }}</span>
                                                             <span class="text-gray-500"> - Rp
                                                                 {{ number_format($product->product_price, 0, ',', '.') }}</span>
                                                         </label>
@@ -318,8 +323,9 @@
                                                                 wire:model.live="quantities.{{ $product->product_id }}"
                                                                 class="w-20 rounded-md border-gray-300" min="1"
                                                                 placeholder="Qty">
-                                                            <span class="text-gray-600">    
-                                                                Rp {{ number_format($productSubtotals[$product->product_id] ?? 0, 0, ',', '.') }}
+                                                            <span class="text-gray-600">
+                                                                Rp
+                                                                {{ number_format($productSubtotals[$product->product_id] ?? 0, 0, ',', '.') }}
                                                             </span>
                                                         @endif
                                                     </div>
@@ -352,9 +358,11 @@
 
                                             <!-- Additional Project Value -->
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Nilai Anggaran Proyek</label>
+                                                <label class="block text-sm font-medium text-gray-700">Nilai Anggaran
+                                                    Proyek</label>
                                                 <div class="mt-1 relative rounded-md shadow-sm">
-                                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <div
+                                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                         <span class="text-gray-500 sm:text-sm">Rp</span>
                                                     </div>
                                                     <input type="number" wire:model.live="project_value"
@@ -381,7 +389,8 @@
                                         <!-- Project Duration Fields -->
                                         <div class="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                                                <label class="block text-sm font-medium text-gray-700">Tanggal
+                                                    Mulai</label>
                                                 <input type="date" wire:model="project_duration_start"
                                                     class="mt-1 block w-full rounded-md border-gray-300">
                                                 @error('project_duration_start')
@@ -389,7 +398,8 @@
                                                 @enderror
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                                                <label class="block text-sm font-medium text-gray-700">Tanggal
+                                                    Selesai</label>
                                                 <input type="date" wire:model="project_duration_end"
                                                     class="mt-1 block w-full rounded-md border-gray-300">
                                                 @error('project_duration_end')
@@ -414,10 +424,9 @@
 
                                         <!-- Project Detail Field -->
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Keterangan Proyek</label>
-                                            <textarea wire:model="project_detail"
-                                                class="mt-1 block w-full rounded-md border-gray-300"
-                                                rows="3"></textarea>
+                                            <label class="block text-sm font-medium text-gray-700">Keterangan
+                                                Proyek</label>
+                                            <textarea wire:model="project_detail" class="mt-1 block w-full rounded-md border-gray-300" rows="3"></textarea>
                                             @error('project_detail')
                                                 <span class="text-sm text-red-600">{{ $message }}</span>
                                             @enderror
@@ -447,10 +456,12 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
                 <div class="fixed inset-0 z-10 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
-                        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-lg">
+                        <div
+                            class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-lg">
                             <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div class="sm:flex sm:items-start">
-                                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                    <div
+                                        class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                                         <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -461,7 +472,8 @@
                                         <h3 class="text-lg font-medium leading-6 text-gray-900">Hapus Proyek</h3>
                                         <div class="mt-2">
                                             <p class="text-sm text-gray-500">
-                                                Apakah Anda yakin ingin menghapus proyek ini? Tindakan ini tidak dapat dibatalkan.
+                                                Apakah Anda yakin ingin menghapus proyek ini? Tindakan ini tidak dapat
+                                                dibatalkan.
                                             </p>
                                         </div>
                                     </div>
@@ -488,13 +500,15 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity z-50">
                 <div class="fixed inset-0 z-10 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
-                        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-4xl">
+                        <div
+                            class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-4xl">
                             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div class="flex justify-between items-center mb-4">
                                     <h3 class="text-lg font-medium leading-6 text-gray-900">Detail Proyek</h3>
                                     <button wire:click="$set('showDetailModal', false)"
                                         class="text-gray-400 hover:text-gray-500">
-                                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
                                         </svg>
@@ -545,13 +559,17 @@
                                             <table class="min-w-full divide-y divide-gray-200">
                                                 <thead>
                                                     <tr>
-                                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">
+                                                        <th
+                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500">
                                                             Produk</th>
-                                                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">
+                                                        <th
+                                                            class="px-4 py-2 text-right text-xs font-medium text-gray-500">
                                                             Harga</th>
-                                                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500">
+                                                        <th
+                                                            class="px-4 py-2 text-center text-xs font-medium text-gray-500">
                                                             Jumlah</th>
-                                                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">
+                                                        <th
+                                                            class="px-4 py-2 text-right text-xs font-medium text-gray-500">
                                                             Subtotal</th>
                                                     </tr>
                                                 </thead>
@@ -562,8 +580,9 @@
                                                                 {{ $product->product_name }}
                                                             </td>
                                                             <td class="px-4 py-2 text-sm text-gray-900 text-right">
-                                                                @if(isset($product->pivot->price_at_time))
-                                                                    Rp {{ number_format((float)$product->pivot->price_at_time, 0, ',', '.') }}
+                                                                @if (isset($product->pivot->price_at_time))
+                                                                    Rp
+                                                                    {{ number_format((float) $product->pivot->price_at_time, 0, ',', '.') }}
                                                                 @else
                                                                     -
                                                                 @endif
@@ -572,20 +591,25 @@
                                                                 {{ $product->pivot->quantity ?? 0 }}
                                                             </td>
                                                             <td class="px-4 py-2 text-sm text-gray-900 text-right">
-                                                                @if(isset($product->pivot->subtotal))
-                                                                    Rp {{ number_format((float)$product->pivot->subtotal, 0, ',', '.') }}
+                                                                @if (isset($product->pivot->subtotal))
+                                                                    Rp
+                                                                    {{ number_format((float) $product->pivot->subtotal, 0, ',', '.') }}
                                                                 @else
-                                                                    Rp {{ number_format((float)($product->pivot->price_at_time * $product->pivot->quantity), 0, ',', '.') }}
+                                                                    Rp
+                                                                    {{ number_format((float) ($product->pivot->price_at_time * $product->pivot->quantity), 0, ',', '.') }}
                                                                 @endif
                                                             </td>
                                                         </tr>
                                                     @endforeach
                                                     <tr class="bg-gray-50">
-                                                        <td colspan="3" class="px-4 py-2 text-sm font-medium text-gray-900">
+                                                        <td colspan="3"
+                                                            class="px-4 py-2 text-sm font-medium text-gray-900">
                                                             Total Produk
                                                         </td>
-                                                        <td class="px-4 py-2 text-sm font-medium text-gray-900 text-right">
-                                                            Rp {{ number_format($selectedProject->products->sum('pivot.subtotal'), 0, ',', '.') }}
+                                                        <td
+                                                            class="px-4 py-2 text-sm font-medium text-gray-900 text-right">
+                                                            Rp
+                                                            {{ number_format($selectedProject->products->sum('pivot.subtotal'), 0, ',', '.') }}
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -617,10 +641,9 @@
                                                 <div class="flex-1">
                                                     <div class="w-full bg-gray-200 rounded-full h-2">
                                                         <div class="h-2 rounded-full transition-all duration-500
-                                                            @if($selectedProject->status === 'Completed') bg-green-600
+                                                            @if ($selectedProject->status === 'Completed') bg-green-600
                                                             @elseif($selectedProject->status === 'Pending') bg-yellow-600
-                                                            @else bg-blue-600
-                                                            @endif"
+                                                            @else bg-blue-600 @endif"
                                                             style="width: {{ $progress[$selectedProject->project_id] ?? 0 }}%">
                                                         </div>
                                                     </div>
@@ -630,12 +653,12 @@
                                                 </span>
                                             </div>
                                             <p class="mt-1 text-sm text-gray-700">
-                                                Status: 
-                                                <span class="font-medium
-                                                    @if($selectedProject->status === 'Completed') text-green-600
+                                                Status:
+                                                <span
+                                                    class="font-medium
+                                                    @if ($selectedProject->status === 'Completed') text-green-600
                                                     @elseif($selectedProject->status === 'Pending') text-yellow-600
-                                                    @else text-blue-600
-                                                    @endif">
+                                                    @else text-blue-600 @endif">
                                                     {{ $selectedProject->status }}
                                                 </span>
                                             </p>
@@ -645,7 +668,8 @@
                                     <!-- Project Details -->
                                     <div>
                                         <h4 class="text-sm font-medium text-gray-500">Detail Proyek</h4>
-                                        <p class="mt-1 text-sm text-gray-900">{{ $selectedProject->project_detail }}</p>
+                                        <p class="mt-1 text-sm text-gray-900">{{ $selectedProject->project_detail }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -670,8 +694,8 @@
             class="fixed bottom-4 right-4 z-50">
             <div x-show="show" x-transition:enter="transform ease-out duration-300"
                 x-transition:enter-start="translate-y-2 opacity-0" x-transition:enter-end="translate-y-0 opacity-100"
-                x-transition:leave="transform ease-in duration-200" x-transition:leave-start="translate-y-0 opacity-100"
-                x-transition:leave-end="translate-y-2 opacity-0"
+                x-transition:leave="transform ease-in duration-200"
+                x-transition:leave-start="translate-y-0 opacity-100" x-transition:leave-end="translate-y-2 opacity-0"
                 class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                 <span x-text="message"></span>
             </div>

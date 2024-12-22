@@ -117,57 +117,13 @@
 
                     <form wire:submit="save">
                         <div class="space-y-4">
-                            @if(!$vendorId)
-                            <!-- User Account Section - Only for new vendors -->
-                            <div class="border-b pb-4">
-                                <h4 class="text-sm font-medium text-gray-900 mb-3">User Account Details</h4>
-                                
-                                <!-- User Name -->
-                                <div>
-                                    <label for="user_name" class="block text-sm font-medium text-gray-700">Name</label>
-                                    <input type="text" wire:model="user_name" id="user_name"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @error('user_name')
-                                        <span class="text-red-500 text-xs">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                    
-                                <!-- User Email -->
-                                <div>
-                                    <label for="user_email" class="block text-sm font-medium text-gray-700">Email</label>
-                                    <input type="email" wire:model="user_email" id="user_email"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @error('user_email')
-                                        <span class="text-red-500 text-xs">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                    
-                                <!-- Password -->
-                                <div>
-                                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                                    <input type="password" wire:model="password" id="password"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @error('password')
-                                        <span class="text-red-500 text-xs">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                    
-                                <!-- Confirm Password -->
-                                <div>
-                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                                    <input type="password" wire:model="password_confirmation" id="password_confirmation"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                </div>
-                            </div>
-                            @endif
-                    
                             <!-- Vendor Details Section -->
                             <div>
                                 <h4 class="text-sm font-medium text-gray-900 mb-3">Vendor Details</h4>
                                 
-                                <!-- Existing vendor fields -->
+                                <!-- Name -->
                                 <div>
-                                    <label for="vendor_name" class="block text-sm font-medium text-gray-700">Vendor Name</label>
+                                    <label for="vendor_name" class="block text-sm font-medium text-gray-700">Name</label>
                                     <input type="text" wire:model="vendor_name" id="vendor_name"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     @error('vendor_name')
@@ -175,8 +131,9 @@
                                     @enderror
                                 </div>
                     
+                                <!-- Email -->
                                 <div>
-                                    <label for="vendor_email" class="block text-sm font-medium text-gray-700">Vendor Email</label>
+                                    <label for="vendor_email" class="block text-sm font-medium text-gray-700">Email</label>
                                     <input type="email" wire:model="vendor_email" id="vendor_email"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     @error('vendor_email')
@@ -184,6 +141,7 @@
                                     @enderror
                                 </div>
                     
+                                <!-- Phone -->
                                 <div>
                                     <label for="vendor_phone" class="block text-sm font-medium text-gray-700">Phone</label>
                                     <input type="text" wire:model="vendor_phone" id="vendor_phone"
@@ -193,6 +151,7 @@
                                     @enderror
                                 </div>
                     
+                                <!-- Address -->
                                 <div>
                                     <label for="vendor_address" class="block text-sm font-medium text-gray-700">Address</label>
                                     <textarea wire:model="vendor_address" id="vendor_address" rows="3"
@@ -201,9 +160,78 @@
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
                                 </div>
+                    
+                                @if(!$vendorId)
+                                <!-- Password fields only for new vendor -->
+<div class="mt-4 pt-4 border-t">
+    <h4 class="text-sm font-medium text-gray-900 mb-3">Account Password</h4>
+    
+    <!-- Password -->
+    <div class="relative">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="relative">
+            <input 
+                type="{{ $showPassword ? 'text' : 'password' }}" 
+                wire:model="password" 
+                id="password"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-10"
+            >
+            <button 
+                type="button" 
+                wire:click="$toggle('showPassword')"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1"
+            >
+                @if($showPassword)
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                @else
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                @endif
+            </button>
+        </div>
+        @error('password')
+            <span class="text-red-500 text-xs">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="relative mt-4">
+        <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <div class="relative">
+            <input 
+                type="{{ $showConfirmPassword ? 'text' : 'password' }}" 
+                wire:model="password_confirmation" 
+                id="password_confirmation"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-10"
+            >
+            <button 
+                type="button" 
+                wire:click="$toggle('showConfirmPassword')"
+                class="absolute inset-y-0 right-0 flex items-center pr-3 mt-1"
+            >
+                @if($showConfirmPassword)
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                @else
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                @endif
+            </button>
+        </div>
+    </div>
+</div>
+                                @endif
                             </div>
                         </div>
                     
+                        <!-- Form buttons -->
                         <div class="mt-6 flex justify-end space-x-3">
                             <button type="button" wire:click="closeModal"
                                 class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
