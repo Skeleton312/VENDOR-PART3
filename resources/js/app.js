@@ -1,4 +1,6 @@
 import './bootstrap';
+import Chart from 'chart.js/auto';
+window.Chart = Chart
 var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
 var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 

@@ -26,8 +26,19 @@ class Product extends Model
                     ->withTimestamps();
     }
 
-    public function salesDetails() 
+    public function salesDetails()
     {
         return $this->hasMany(SalesDetail::class, 'product_id', 'product_id');
     }
+
+    // Metode untuk menghitung jumlah penjualan
+    public function scopeWithSalesCount($query)
+    {
+        return $query->addSelect([
+            'sales_count' => SalesDetail::selectRaw('COUNT(*)')
+                ->whereColumn('product_id', 'products.product_id')
+        ]);
+    }
+    
+
 }

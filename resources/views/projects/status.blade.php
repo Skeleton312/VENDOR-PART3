@@ -22,18 +22,64 @@
     </x-slot>
 
     <div class="py-12">
-        @if(Auth::user()->role === 'Customer')
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if(Auth::user()->role === 'Customers')
                 <livewire:project.project-status-customer />
-            </div>
-        @elseif(Auth::user()->role === 'Vendor')
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @elseif(Auth::user()->role === 'Vendor')
                 <livewire:project.project-status-vendor />
-            </div>
-        @else
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @else
                 <livewire:project.project-status />
-            </div>
-        @endif
+            @endif
+        </div>
     </div>
+
+    <!-- Scripts -->
+    @push('scripts')
+    <script>
+        document.addEventListener('livewire:init', function () {
+            Livewire.on('showAlert', message => {
+                You can implement your own alert system here
+                alert(message);
+            });
+        });
+    </script>
+    @endpush
+
+    <!-- Styles -->
+    @push('styles')
+    <style>
+        /* Custom scrollbar styles */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 20px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.8);
+        }
+
+        /* Progress bar animation */
+        .progress-bar-animate {
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Card hover effects */
+        .metric-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+    @endpush
 </x-app-layout>

@@ -18,8 +18,8 @@
     },
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
+        "apexcharts": "^4.3.0",
         "chart.js": "^4.4.7",
         "flowbite": "^2.5.2"
     }
-    
 }
