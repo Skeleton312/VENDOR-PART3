@@ -74,8 +74,14 @@
                                     <div class="p-6">
                                         <h3 class="text-xl font-bold text-blue-800 mb-2">{{ $project->project_header }}
                                         </h3>
-                                        <div class="text-sm text-gray-600 mb-4">{{ $project->vendor->vendor_name }}
+                                        <div class="text-sm text-gray-600 mb-4">
+                                            @if ($project->vendor)
+                                                {{ $project->vendor->vendor_name }}
+                                            @else
+                                                <span class="text-yellow-600">No Vendor Assigned</span>
+                                            @endif
                                         </div>
+
 
                                         <!-- Timeline Progress -->
                                         <div class="mb-4 p-4 bg-white bg-opacity-60 rounded-lg">
@@ -96,14 +102,13 @@
                                             @php
                                                 $purchase = $this->checkPurchaseStatus($project);
                                             @endphp
-                                            @if ($purchase)
+                                            @if($purchase)
                                                 <div class="text-sm mb-2">
                                                     <span class="font-medium">Purchase Status:</span>
-                                                    <span
-                                                        class="ml-2 px-2 py-1 rounded-full text-xs
-                @if ($purchase->status === 'Completed') bg-green-100 text-green-800
-                @elseif($purchase->status === 'Pending') bg-yellow-100 text-yellow-800
-                @else bg-red-100 text-red-800 @endif">
+                                                    <span class="ml-2 px-2 py-1 rounded-full text-xs
+                                                        @if($purchase->status === 'Completed') bg-green-100 text-green-800
+                                                        @elseif($purchase->status === 'Pending') bg-yellow-100 text-yellow-800
+                                                        @else bg-red-100 text-red-800 @endif">
                                                         {{ $purchase->status }}
                                                     </span>
                                                 </div>
@@ -111,7 +116,13 @@
                                                     Last updated: {{ $purchase->updated_at->format('d M Y H:i') }}
                                                 </div>
                                             @else
-                                                <div class="text-sm text-gray-500">No purchase record</div>
+                                                <div class="text-sm text-gray-500">
+                                                    @if($project->vendor)
+                                                        No purchase record
+                                                    @else
+                                                        Please assign a vendor first
+                                                    @endif
+                                                </div>
                                             @endif
                                         </div>
 
@@ -120,10 +131,16 @@
                                                 class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                                 View Details
                                             </button>
-                                            @if (!$purchase)
+                                            @if ($project->vendor && !$purchase)
                                                 <button wire:click="createPurchase({{ $project->project_id }})"
                                                     wire:confirm="Are you sure you want to create a purchase for this project?"
                                                     class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                                    Create Purchase
+                                                </button>
+                                            @elseif(!$project->vendor)
+                                                <button disabled
+                                                    class="flex-1 px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+                                                    title="Cannot create purchase without vendor">
                                                     Create Purchase
                                                 </button>
                                             @endif

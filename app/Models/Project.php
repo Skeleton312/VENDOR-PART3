@@ -54,4 +54,9 @@ class Project extends Model
     {
         return $this->hasMany(PriceQuotation::class, 'project_id', 'project_id');
     }
+
+    public function purchase()
+{
+    return $this->hasOne(Purchase::class, 'project_id', 'project_id');
+}
 }

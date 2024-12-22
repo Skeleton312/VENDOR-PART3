@@ -121,35 +121,42 @@ class ProjectListCustomer extends Component
         });
     }
     public function createPurchase($projectId)
-{
-    try {
-        $project = Project::with(['products'])->findOrFail($projectId);
-        
-        // Create Purchase
-        $purchase = Purchase::create([
-            'vendor_id' => $project->vendor_id,
-            'user_id' => Auth::id(),
-            'project_id' => $project->project_id,
-            'total_amount' => $project->project_value,
-            'purchase_date' => now(),
-            'status' => 'Pending'
-        ]);
-
-        // Create Purchase Details menggunakan DB Query Builder
-        foreach ($project->products as $product) {
-            DB::table('purchase_details')->insert([
-                'purchase_id' => $purchase->purchase_id,
-                'product_id' => $product->product_id,
-                'quantity' => $product->pivot->quantity,
-                'subtotal' => $product->pivot->subtotal
+    {
+        try {
+            $project = Project::with(['products'])->findOrFail($projectId);
+            
+            // Check if project has vendor
+            if (!$project->vendor) {
+                $this->dispatch('flash-message', 'Cannot create purchase: Project has no vendor assigned.');
+                return;
+            }
+            
+            // Create Purchase
+            $purchase = Purchase::create([
+                'vendor_id' => $project->vendor_id,
+                'user_id' => Auth::id(),
+                'project_id' => $project->project_id,
+                'total_amount' => $project->project_value,
+                'purchase_date' => now(),
+                'status' => 'Pending'
             ]);
+    
+            // Create Purchase Details dengan updated_at
+            foreach ($project->products as $product) {
+                DB::table('purchase_details')->insert([
+                    'purchase_id' => $purchase->purchase_id,
+                    'product_id' => $product->product_id,
+                    'quantity' => $product->pivot->quantity,
+                    'subtotal' => $product->pivot->subtotal,
+                    'updated_at' => now()
+                ]);
+            }
+    
+            $this->dispatch('flash-message', 'Purchase created successfully!');
+        } catch (\Exception $e) {
+            $this->dispatch('flash-message', 'Error creating purchase: ' . $e->getMessage());
         }
-
-        $this->dispatch('flash-message', 'Purchase created successfully!');
-    } catch (\Exception $e) {
-        $this->dispatch('flash-message', 'Error creating purchase: ' . $e->getMessage());
     }
-}
     
     protected function checkPurchaseStatus($project)
     {

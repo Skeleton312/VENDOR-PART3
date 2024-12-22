@@ -117,58 +117,104 @@
 
                     <form wire:submit="save">
                         <div class="space-y-4">
-                            <!-- Vendor Name -->
-                            <div>
-                                <label for="vendor_name" class="block text-sm font-medium text-gray-700">Vendor Name</label>
-                                <input type="text" wire:model="vendor_name" id="vendor_name"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                @error('vendor_name')
-                                    <span class="text-red-500 text-xs">{{ $message }}</span>
-                                @enderror
+                            @if(!$vendorId)
+                            <!-- User Account Section - Only for new vendors -->
+                            <div class="border-b pb-4">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">User Account Details</h4>
+                                
+                                <!-- User Name -->
+                                <div>
+                                    <label for="user_name" class="block text-sm font-medium text-gray-700">Name</label>
+                                    <input type="text" wire:model="user_name" id="user_name"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('user_name')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <!-- User Email -->
+                                <div>
+                                    <label for="user_email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" wire:model="user_email" id="user_email"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('user_email')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <!-- Password -->
+                                <div>
+                                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" wire:model="password" id="password"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('password')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <!-- Confirm Password -->
+                                <div>
+                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                    <input type="password" wire:model="password_confirmation" id="password_confirmation"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                </div>
                             </div>
-
-                            <!-- Email -->
+                            @endif
+                    
+                            <!-- Vendor Details Section -->
                             <div>
-                                <label for="vendor_email" class="block text-sm font-medium text-gray-700">Email</label>
-                                <input type="email" wire:model="vendor_email" id="vendor_email"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                @error('vendor_email')
-                                    <span class="text-red-500 text-xs">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <!-- Phone -->
-                            <div>
-                                <label for="vendor_phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                                <input type="text" wire:model="vendor_phone" id="vendor_phone"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                @error('vendor_phone')
-                                    <span class="text-red-500 text-xs">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <!-- Address -->
-                            <div>
-                                <label for="vendor_address" class="block text-sm font-medium text-gray-700">Address</label>
-                                <textarea wire:model="vendor_address" id="vendor_address" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                                @error('vendor_address')
-                                    <span class="text-red-500 text-xs">{{ $message }}</span>
-                                @enderror
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Vendor Details</h4>
+                                
+                                <!-- Existing vendor fields -->
+                                <div>
+                                    <label for="vendor_name" class="block text-sm font-medium text-gray-700">Vendor Name</label>
+                                    <input type="text" wire:model="vendor_name" id="vendor_name"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('vendor_name')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <div>
+                                    <label for="vendor_email" class="block text-sm font-medium text-gray-700">Vendor Email</label>
+                                    <input type="email" wire:model="vendor_email" id="vendor_email"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('vendor_email')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <div>
+                                    <label for="vendor_phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                                    <input type="text" wire:model="vendor_phone" id="vendor_phone"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    @error('vendor_phone')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                    
+                                <div>
+                                    <label for="vendor_address" class="block text-sm font-medium text-gray-700">Address</label>
+                                    <textarea wire:model="vendor_address" id="vendor_address" rows="3"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                    @error('vendor_address')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
-
+                    
                         <div class="mt-6 flex justify-end space-x-3">
                             <button type="button" wire:click="closeModal"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                 Cancel
                             </button>
                             <button type="submit"
-                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ $vendorId ? 'Update' : 'Save' }}
-                        </button>
-                    </div>
-                </form>
+                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                {{ $vendorId ? 'Update' : 'Save' }}
+                            </button>
+                        </div>
+                    </form>
             </div>
         </div>
     </div>

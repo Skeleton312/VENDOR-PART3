@@ -5,7 +5,9 @@ use App\Models\Vendor;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth; // Tambahkan ini
-
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class Main extends Component
 {
@@ -23,12 +25,19 @@ class Main extends Component
     public $vendor_email;
     public $vendor_phone;
     public $vendor_address;
+    public $user_name;
+    public $user_email;
+    public $password;
+    public $password_confirmation;
     public $notification = [
         'show' => false,
         'message' => ''
     ];
 
     protected $rules = [
+        'user_name' => 'required|string|min:3',
+        'user_email' => 'required|email|unique:users,email',
+        'password' => 'required|min:8|confirmed',
         'vendor_name' => 'required|min:3',
         'vendor_email' => 'required|email',
         'vendor_phone' => 'required',
@@ -60,6 +69,10 @@ class Main extends Component
     public function resetForm()
     {
         $this->vendorId = null;
+        $this->user_name = '';
+        $this->user_email = '';
+        $this->password = '';
+        $this->password_confirmation = '';
         $this->vendor_name = '';
         $this->vendor_email = '';
         $this->vendor_phone = '';
@@ -68,42 +81,92 @@ class Main extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            DB::beginTransaction();
 
-        if ($this->vendorId) {
-            $vendor = Vendor::findOrFail($this->vendorId);
-            $vendor->update([
-                'vendor_name' => $this->vendor_name,
-                'vendor_email' => $this->vendor_email,
-                'vendor_phone' => $this->vendor_phone,
-                'vendor_address' => $this->vendor_address,
-            ]);
-            $message = 'Vendor updated successfully';
-        } else {
-            Vendor::create([
-                'user_id' => Auth::id(),
-                'vendor_name' => $this->vendor_name,
-                'vendor_email' => $this->vendor_email,
-                'vendor_phone' => $this->vendor_phone,
-                'vendor_address' => $this->vendor_address,
-            ]);
-            $message = 'Vendor added successfully';
+            if ($this->vendorId) {
+                // Update existing vendor
+                $vendor = Vendor::findOrFail($this->vendorId);
+                $vendor->update([
+                    'vendor_name' => $this->vendor_name,
+                    'vendor_email' => $this->vendor_email,
+                    'vendor_phone' => $this->vendor_phone,
+                    'vendor_address' => $this->vendor_address,
+                ]);
+
+                // Update user if email changed
+                if ($vendor->user->email !== $this->vendor_email) {
+                    $vendor->user->update([
+                        'email' => $this->vendor_email
+                    ]);
+                }
+
+                $message = 'Vendor updated successfully';
+            } else {
+                // Validate for new vendor
+                $this->validate();
+
+                // Create new user
+                $user = User::create([
+                    'name' => $this->user_name,
+                    'email' => $this->user_email,
+                    'password' => Hash::make($this->password),
+                    'role' => 'Vendor',
+                    'status' => 'Active'
+                ]);
+
+                // Create new vendor
+                Vendor::create([
+                    'user_id' => $user->id,
+                    'vendor_name' => $this->vendor_name,
+                    'vendor_email' => $this->vendor_email,
+                    'vendor_phone' => $this->vendor_phone,
+                    'vendor_address' => $this->vendor_address,
+                ]);
+
+                $message = 'Vendor and account created successfully';
+            }
+
+            DB::commit();
+
+            $this->closeModal();
+            $this->notification['show'] = true;
+            $this->notification['message'] = $message;
+            $this->resetPage();
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $this->notification['show'] = true;
+            $this->notification['message'] = 'Error: ' . $e->getMessage();
         }
-
-        $this->closeModal();
-        $this->notification['show'] = true;
-        $this->notification['message'] = $message;
-        $this->resetPage();
     }
 
     public function deleteVendor($vendorId)
     {
-        $vendor = Vendor::findOrFail($vendorId);
-        $vendor->delete();
+        try {
+            DB::beginTransaction();
 
-        $this->notification['show'] = true;
-        $this->notification['message'] = 'Vendor deleted successfully.';
-        $this->resetPage();
+            $vendor = Vendor::with('user')->findOrFail($vendorId);
+            
+            // Delete user account
+            if ($vendor->user) {
+                $vendor->user->delete();
+            }
+            
+            // Delete vendor
+            $vendor->delete();
+
+            DB::commit();
+
+            $this->notification['show'] = true;
+            $this->notification['message'] = 'Vendor and account deleted successfully.';
+            $this->resetPage();
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $this->notification['show'] = true;
+            $this->notification['message'] = 'Error: ' . $e->getMessage();
+        }
     }
 
     public function updatingSearch()
@@ -118,7 +181,7 @@ class Main extends Component
 
     public function render()
     {
-        $vendors = Vendor::query()
+        $vendors = Vendor::with('user')
             ->when($this->search, function($query) {
                 $query->where(function($query) {
                     $query->where('vendor_name', 'like', "%{$this->search}%")
@@ -126,13 +189,7 @@ class Main extends Component
                         ->orWhere('vendor_phone', 'like', "%{$this->search}%");
                 });
             })
-            ->when($this->filters['date_from'], function($query) {
-                $query->whereDate('created_at', '>=', $this->filters['date_from']);
-            })
-            ->when($this->filters['date_to'], function($query) {
-                $query->whereDate('created_at', '<=', $this->filters['date_to']);
-            })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('vendor_id', 'desc')
             ->paginate(10);
 
         return view('livewire.vendor.main', [

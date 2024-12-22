@@ -5,6 +5,7 @@ namespace App\Livewire\Project;
 use App\Models\Project;
 use App\Models\Customer;
 use App\Models\Vendor;
+use App\Models\Purchase;
 use App\Models\CustomerInteraction;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -17,6 +18,8 @@ class ProjectListVendor extends Component
     use WithPagination;
 
     // Properties for modals and filters
+    public $purchaseStatus = '';
+
     public $showDetailModal = false;
     public $showUpdateModal = false;
     public $selectedProject = null;
@@ -33,7 +36,8 @@ class ProjectListVendor extends Component
     public $project_duration_start;
     public $project_duration_end;
     public $notes;
-
+    public $showPurchaseModal = false;
+    public $selectedPurchase = null;
     protected $rules = [
         'project_header' => 'required|string|max:100',
         'project_duration_start' => 'required|date',
@@ -79,6 +83,45 @@ class ProjectListVendor extends Component
         }
     }
 
+    public function checkPurchaseStatus($project)
+{
+    try {
+        // Cari purchase terkait dengan project
+        $purchase = Purchase::where('project_id', $project->project_id)
+            ->first();
+
+        return $purchase;
+    } catch (\Exception $e) {
+        // Tangani error jika terjadi
+        $this->dispatch('error', 'Error checking purchase status: ' . $e->getMessage());
+        return null;
+    }
+}
+    public function viewPurchase($projectId)
+    {
+        $vendor = $this->getCurrentVendor();
+        if (!$vendor) {
+            return;
+        }
+
+        try {
+            // Cari purchase terkait dengan project
+            $purchase = Purchase::whereHas('project', function($query) use ($projectId, $vendor) {
+                $query->where('project_id', $projectId)
+                      ->where('vendor_id', $vendor->vendor_id);
+            })->first();
+
+            if (!$purchase) {
+                $this->dispatch('error', 'Purchase not found for this project.');
+                return;
+            }
+
+            $this->selectedPurchase = $purchase;
+            $this->showPurchaseModal = true;
+        } catch (\Exception $e) {
+            $this->dispatch('error', 'Error loading purchase: ' . $e->getMessage());
+        }
+    }
     public function openUpdateModal($projectId)
     {
         $this->resetValidation();
@@ -106,6 +149,24 @@ class ProjectListVendor extends Component
             $this->showUpdateModal = true;
         } catch (\Exception $e) {
             $this->dispatch('error', 'Error loading project: ' . $e->getMessage());
+        }
+    }
+    public function updatePurchaseStatus()
+    {
+        if (!$this->selectedPurchase) {
+            $this->dispatch('error', 'No purchase selected.');
+            return;
+        }
+
+        try {
+            $this->selectedPurchase->update([
+                'status' => $this->purchaseStatus
+            ]);
+
+            $this->dispatch('project-updated', 'Purchase status updated successfully!');
+            $this->showPurchaseModal = false;
+        } catch (\Exception $e) {
+            $this->dispatch('error', 'Error updating purchase status: ' . $e->getMessage());
         }
     }
 
