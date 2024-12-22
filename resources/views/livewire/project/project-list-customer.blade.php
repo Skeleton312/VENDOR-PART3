@@ -389,19 +389,19 @@
                             <div class="space-y-3">
                                 <div>
                                     <div class="text-sm text-gray-500">Vendor Name</div>
-                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_name }}</div>
+                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_name ?? "Tidak Ada Vendor" }}</div>
                                 </div>
                                 <div>
                                     <div class="text-sm text-gray-500">Email</div>
-                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_email }}</div>
+                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_email ?? "Tidak Ada Vendor" }}</div>
                                 </div>
                                 <div>
                                     <div class="text-sm text-gray-500">Phone</div>
-                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_phone }}</div>
+                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_phone ?? "Tidak Ada Vendor" }}</div>
                                 </div>
                                 <div>
                                     <div class="text-sm text-gray-500">Address</div>
-                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_address }}</div>
+                                    <div class="font-medium">{{ $selectedProject->vendor->vendor_address?? "Tidak Ada Vendor" }}</div>
                                 </div>
                             </div>
                         </div>
