@@ -11,9 +11,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return view('products.main');
     }
-
+    public function categories()
+    {
+        return view('products.categories');
+    }
     /**
      * Show the form for creating a new resource.
      */

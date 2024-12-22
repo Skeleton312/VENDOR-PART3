@@ -119,40 +119,5 @@ class MarketingController extends Controller
             'scheduledDetails' => $scheduledDetails, 
         ]);
     }
-    public function handleWebhook(Request $request)
-    {
-        
-        $data = json_decode($request, true);
-        dd($data);
-        $id = $data['id'];
-        $stateid = $data['stateid'];
-        $status = $data['status'];
-        $state = $data['state'];
-
-        if ($stateid !== null) {
-            MarketingDetail::where('send_id', $id)
-                ->update([
-                    'status' => $status,
-                    'state' => $state,
-                    'state_id' => $stateid,
-                ]);
-            Lead::where('send_id', $id)
-                ->update([
-                    'status' => $status,
-                    'state' => $state,
-                    'state_id' => $stateid,
-                ]);
-        } elseif ($stateid === null) {
-            MarketingDetail::where('send_id', $id)
-                ->update(['status' => $status]);
-            Lead::where('send_id', $id)
-                ->update(['status' => $status]);
-        } else {
-            MarketingDetail::where('state_id', $stateid)
-                ->update(['state' => $state]);
-            Lead::where('state_id', $stateid)
-                ->update(['state' => $state]);
-        }
-    }
     
 }

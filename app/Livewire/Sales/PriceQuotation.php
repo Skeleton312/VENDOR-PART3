@@ -6,6 +6,7 @@ use Livewire\WithPagination;
 use App\Models\PriceQuotation as PriceQuotationModel;
 use App\Models\Project;
 use App\Models\Vendor;
+use App\Services\Fonnte;
 use Illuminate\Support\Facades\DB;
 use App\Models\CustomerInteraction;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,6 @@ class PriceQuotation extends Component
     public $showModal = false;
     public $editMode = false;
     public $quotation_id;
-
     // Properties untuk konfirmasi
     public $showAcceptModal = false;
     public $selectedQuotation = null;
@@ -32,7 +32,9 @@ class PriceQuotation extends Component
     public $projectFilter = '';
     public $vendorFilter = '';
     public $statusFilter = '';
+    protected $fonnte;
 
+    
     protected function rules()
     {
         return [
@@ -113,9 +115,8 @@ class PriceQuotation extends Component
         try {
             DB::beginTransaction();
     
-            // Ambil data quotation bersama project dan vendor
-            $quotation = PriceQuotationModel::with(['project', 'vendor'])->findOrFail($quotationId);
-            
+            // Ambil data quotation bersama project
+            $quotation = PriceQuotationModel::with('project', 'vendor')->findOrFail($quotationId);
             if (!$quotation) {
                 throw new \Exception('Quotation tidak ditemukan');
             }
@@ -123,22 +124,42 @@ class PriceQuotation extends Component
             if (!$quotation->project) {
                 throw new \Exception('Project tidak ditemukan untuk quotation ini');
             }
-    
-            // Pastikan vendor ada di quotation
-            if (!$quotation->vendor) {
-                throw new \Exception('Vendor tidak ditemukan untuk quotation ini');
-            }
             
-            // Update project value dan vendor dari quotation
+            // Update project value dengan amount dari quotation
             $quotation->project->update([
-                'project_value' => $quotation->amount,
-                'vendor_id' => $quotation->vendor_id  // Tambahkan update vendor
+                'project_value' => $quotation->amount
             ]);
+            $fonnte = new Fonnte();
+
+            // Ambil vendor data
+            $vendor = $quotation->vendor;
+            if (!$vendor) {
+                throw new \Exception('Vendor tidak ditemukan');
+            }
+
+            $project = $quotation->project; 
     
-              
+            $amount = $quotation->amount; 
+            if ($vendor && $project) {
+                $targetData = "{$vendor->vendor_phone} | {$vendor->vendor_name} | {$project->project_header} | {$project->project_detail} | {$amount}";
+                $message = "Teruntuk yang terhormat, {$vendor->vendor_name}\nPemberitahuan penawaran kerja sama untuk proyek {$project->project_header}, dengan detail {$project->project_detail}. \nSerta besar penawaran {$amount}. Telah berstatus DITERIMA.";
+            } else {
+                $targetData = 'Data incomplete';
+                $message = 'Tidak dapat mengirim pesan karena data tidak lengkap.';
+            }
+    
+            $postData = [
+                'target' => $targetData,
+                'message' => $message,
+                'countryCode' => 62,
+            ];    
+            
+            $fonnte->send('https://api.fonnte.com/send', $postData);
+            $this->reset(['project_id', 'vendor_id', 'amount', 'editMode', 'quotation_id']);
+    
             DB::commit();
             
-            $this->dispatch('quotation-accepted', 'Quotation berhasil diterima, nilai proyek dan vendor telah diupdate!');
+            $this->dispatch('quotation-accepted', 'Quotation berhasil diterima dan nilai proyek telah diupdate!');
     
         } catch (\Exception $e) {
             DB::rollBack();
@@ -171,9 +192,29 @@ class PriceQuotation extends Component
             DB::commit();
     
             $this->showModal = false;
+            $this->dispatch('quotation-saved', $message);
+
+            $fonnte = new Fonnte();
+            $target = Vendor::where('vendor_id', $this->vendor_id)->first(['vendor_name', 'vendor_phone']);
+            $project = Project::where('project_id', $this->project_id)->first(['project_header', 'project_detail']);
+            $amount = $this->amount;
+            if ($target && $project) {
+                $targetData = "{$target->vendor_phone} | {$target->vendor_name} | {$project->project_header} | {$project->project_detail} | {$amount}";
+                $message = "Teruntuk yang terhormat, {$target->vendor_name}\nKami mengajukan penawaran kerja sama untuk proyek {$project->project_header}, dengan detail {$project->project_detail}.\nAdapun harga pertama yang kami tawarkan adalah {$amount}. Mohon ketersediaannya untuk melakukan diskusi lebih lanjut bersama tim Kami.";
+            } else {
+                $targetData = 'Data incomplete';
+                $message = 'Tidak dapat mengirim pesan karena data tidak lengkap.';
+            }
+            
+            $postData = [
+                'target' => $targetData,
+                'message' => $message,
+                'countryCode' => 62,
+            ];
+            
+            $fonnte->send('https://api.fonnte.com/send', $postData);
             $this->reset(['project_id', 'vendor_id', 'amount', 'editMode', 'quotation_id']);
             
-            $this->dispatch('quotation-saved', $message);
     
         } catch (\Exception $e) {
             DB::rollBack();
@@ -197,8 +238,6 @@ class PriceQuotation extends Component
             session()->flash('error', 'Error deleting quotation: ' . $e->getMessage());
         }
     }
-
-    
 
     public function resetFilters()
     {

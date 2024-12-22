@@ -9,10 +9,10 @@ class Product extends Model
     protected $primaryKey = 'product_id';
 
     protected $fillable = [
-        'product_name',
-        'product_category', 
+        'product_name', 
         'product_price',
-        'description'
+        'description',
+        'category_id',
     ];
 
     protected $casts = [
@@ -26,19 +26,21 @@ class Product extends Model
                     ->withTimestamps();
     }
 
-    public function salesDetails()
+    public function salesDetails() 
     {
         return $this->hasMany(SalesDetail::class, 'product_id', 'product_id');
     }
-
-    // Metode untuk menghitung jumlah penjualan
-    public function scopeWithSalesCount($query)
+    public function category()
     {
-        return $query->addSelect([
-            'sales_count' => SalesDetail::selectRaw('COUNT(*)')
-                ->whereColumn('product_id', 'products.product_id')
-        ]);
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
-    
-
+        // Metode untuk menghitung jumlah penjualan
+    public function scopeWithSalesCount($query)
+        {
+            return $query->addSelect([
+                'sales_count' => SalesDetail::selectRaw('COUNT(*)')
+                    ->whereColumn('product_id', 'products.product_id')
+            ]);
+        }
+        
 }

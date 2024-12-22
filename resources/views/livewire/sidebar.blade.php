@@ -308,10 +308,6 @@
                            :class="isActive('/products/categories') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
                            Categories
                        </a>
-                       <a href="/products/prices" class="p-4 rounded"
-                           :class="isActive('/products/prices') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                           Price List
-                       </a>
                    </div>
 
                    <!-- Projects Menu -->

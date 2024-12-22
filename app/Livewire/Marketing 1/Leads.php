@@ -16,6 +16,8 @@ class Leads extends Component
     public $status = 'all'; 
     public $search = '';
     public $filters = [
+        'date_from' => '',
+        'date_to' => '',
         'status'=>'',
     ];
   
@@ -72,9 +74,9 @@ class Leads extends Component
     public function updateLeads()
      {
         $leads = Lead::withCount(['marketingDetails' => function ($query) {
-            $query->where('state', 'delivered');
+            $query->where('status', 'delivered');
         }])->get();
-        
+    
         foreach ($leads as $lead) {
             // Hitung persentase delivered
             $deliveredCount = $lead->marketing_details_count;  
@@ -84,7 +86,7 @@ class Leads extends Component
             if ($messageCount > 0) {
                 $deliveredPercentage = ($deliveredCount / $messageCount) * 100;
     
-                if ($deliveredPercentage < 50) {
+                if ($deliveredPercentage == 0) {
                     $status = 'follow up';
                 } elseif ($deliveredPercentage >= 50 && $deliveredPercentage < 100) {
                     $status = 'potential';
@@ -95,7 +97,7 @@ class Leads extends Component
                 // Update status pada tabel Lead
                 $lead->update([
                     'delivered' => $deliveredCount,
-                    'status' => $status,
+                    'status' => $status
                 ]);
             }
         }

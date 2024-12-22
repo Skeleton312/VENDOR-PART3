@@ -1,54 +1,25 @@
-<div class="relative" 
-    x-data="{ 
-        showPassword: false, 
-        showConfirmPassword: false,
-        showSuccess: @entangle('showSuccess'),
-        isLoading: @entangle('isLoading')
-    }">
+<div class="relative" >
     <!-- Form Container -->
     <div class="p-6">
         <h2 class="text-lg font-medium text-gray-900">
-            {{ $campaignId ? 'Edit campaign' : 'Add New Campaign' }}
+            {{ $categoryId ? 'Edit Category' : 'Add New Category' }}
         </h2>
 
         <form wire:submit.prevent="confirmSave" class="mt-6">
             <div class="space-y-4">
                 <!-- Name Field -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Campaign Name</label>
-                    <input type="text" wire:model="campaign_name"
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <input type="text" wire:model="category"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    @error('campaign_name') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
+                    @error('category') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
-
-                <!-- Description -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Massage</label>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
                     <textarea wire:model="description" rows="3"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                     @error('description') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
-                <p class="font-thin text-gray-500">nb: Tambahkan '{name}' di tempat Anda menginginkan nama untuk di display pada pesan (Misal, ' Selamat siang {name}) dan '\n' untuk baris baru. </p>
-                <label class="inline-flex items-center cursor-pointer">
-                    <input type="checkbox" value="true" class="sr-only peer" wire:model="name_included">
-                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Include Customer's Name</span>
-                </label>
-        <!-- start date -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Start Date</label>
-            <input type="date" wire:model="start_date"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            @error('start_date') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-        </div>
-
-        <!-- end date -->
-        <div>
-            <label class="block text-sm font-medium text-gray-700">End Date</label>
-            <input type="date" wire:model="end_date"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            @error('end_date') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
-        </div>
     </div>
 
     <div class="mt-6 flex justify-end space-x-3">
@@ -58,7 +29,7 @@
         </button>
         <button type="submit"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-            {{ $campaignId ? 'Update' : 'Save' }}
+            {{ $categoryId ? 'Update' : 'Save' }}
         </button>
     </div>
     </form>
@@ -111,26 +82,18 @@
                             </div>
                             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                 <h3 class="text-base font-semibold leading-6 text-gray-900">
-                                    Confirm campaign Details
+                                    Confirm Category Details
                                 </h3>
                                 <div class="mt-4 space-y-3">
                                     <div class="flex justify-between items-center">
                                         <span class="font-medium text-gray-500">Name:</span>
-                                        <span class="text-gray-900">{{ $campaign_name }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="font-medium text-gray-500">Massage or Description:</span>
-                                        <span class="text-gray-900">{{ $description }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="font-medium text-gray-500">Start Date:</span>
-                                        <span class="text-gray-900">{{ $start_date}}</span>
+                                        <span class="text-gray-900">{{ $category }}</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="font-medium text-gray-500">End Date:</span>
-                                        <span class="text-gray-900 mt-1">{{ $end_date }}</span>
+                                        <span class="font-medium text-gray-500">Description:</span>
+                                        <span class="text-gray-900 mt-1">{{ $description }}</span>
                                     </div>
-                                    @if(!$campaignId)
+                                    @if(!$categoryId)
                                         <div class="mt-4 bg-yellow-50 p-3 rounded-md">
                                             <div class="flex">
                                                 <div class="flex-shrink-0">
@@ -144,7 +107,7 @@
                                                     </h3>
                                                     <div class="mt-2 text-sm text-yellow-700">
                                                         <p>
-                                                            Campaign is added to the list.
+                                                            Category is added to the list.
                                                         </p>
                                                     </div>
                                                 </div>

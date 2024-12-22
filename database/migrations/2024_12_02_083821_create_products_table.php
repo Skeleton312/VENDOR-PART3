@@ -18,6 +18,12 @@ return new class extends Migration
             $table->decimal('product_price', 10, 2);
             $table->text('description');
             $table->timestamps();
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table
+            ->foreign('category_id')
+            ->references('id')
+            ->on('categories') 
+            ->onDelete('cascade');
         });
     }
 

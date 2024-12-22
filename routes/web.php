@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Models\MarketingDetail;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\MarketingController;
@@ -16,41 +17,40 @@ Route::get('/', function () {
 })->name('welcome');
 
 Route::view('/contact', 'contact')->name('contact');
-Route::get('marketing/webhook', function (Request $request) {
-    $request->validate([
-        'device' => 'required|string',
-        'id' => 'required|integer',
-        'stateid' => 'nullable|integer',
-        'status' => 'required|string',
-        'state' => 'required|string',
-    ]);
-    dd($request);
-    $device = $request->input('device');
-    $id = $request->input('id');
-    $stateid = $request->input('stateid');
-    $status = $request->input('status');
-    $state = $request->input('state');
+Route::match(['GET', 'POST'], 'marketing/webhook', function () {
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
 
-    try {
-        if (isset($id) && isset($stateid)) {
+    // Ambil data yang diperlukan
+    $device = $data['device'];
+    $stateid = $data['stateid'];
+    $state = $data['state'];
+    $status = isset($data['status']) ? $data['status'] : null; // Status mungkin ada atau tidak
+
+    // Cek apakah data memiliki 'id'
+    if (isset($data['id'])) {
+        $id = $data['id'];
+
+        // Jika ada 'id' dan 'stateid', lakukan update pada semua kolom
+        if (isset($stateid)) {
             MarketingDetail::where('send_id', $id)
                 ->update([
                     'status' => $status,
                     'state' => $state,
                     'state_id' => $stateid,
                 ]);
-        } else if (isset($id) && !isset($stateid)) {
+        } else {
+            // Jika hanya 'id' dan tanpa 'stateid', update hanya 'status'
             MarketingDetail::where('send_id', $id)
                 ->update(['status' => $status]);
-        } else {
+        }
+    } else {
+        // Jika tidak ada 'id', maka lakukan update berdasarkan 'stateid' saja
+        if (isset($stateid)) {
             MarketingDetail::where('state_id', $stateid)
                 ->update(['state' => $state]);
         }
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-
-    return response()->json(['message' => 'Data updated successfully']);
 });
 Route::middleware([
     'auth:sanctum',
@@ -97,7 +97,6 @@ Route::middleware([
         })->name('shipping');
     });
 
-    // Marketing
     Route::prefix('marketing')->group(function () {
         Route::get('/whatsapp', [MarketingController::class, 'whatsapp'])->name('marketing.whatsapp');
         Route::get('whatsapp/send/{campaignId}', [MarketingController::class, 'sendCustomer'])->name('marketing.send');//go to target customer choice page
@@ -107,6 +106,7 @@ Route::middleware([
         Route::get('/detail/{campaignId}', [MarketingController::class, 'detailShow'])->name('marketing.detail');
         Route::get('/history', [MarketingController::class, 'historyShow'])->name('message.history');
     });
+
     Route::prefix('leads')->group(function () {
         Route::get('/', [LeadController::class, 'index'])->name('marketing.leads');
         Route::get('/update', [LeadController::class, 'update'])->name('leads.update');
@@ -114,9 +114,8 @@ Route::middleware([
     });
     // Products
     Route::prefix('products')->group(function () {
-        Route::get('/catalog', [ProductController::class, 'catalog'])->name('products.catalog');
+        Route::get('/catalog', [ProductController::class, 'index'])->name('products.catalog');
         Route::get('/categories', [ProductController::class, 'categories'])->name('products.categories');
-        Route::get('/prices', [ProductController::class, 'prices'])->name('products.prices');
     });
 
     // Projects 

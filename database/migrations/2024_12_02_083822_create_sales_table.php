@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers', 'customer_id');
             $table->decimal('fixed_amount', 10, 2);
             $table->date('sale_date');
-            $table->enum('status', ['Pending', 'Processing', 'Completed', 'Cancelled']);
+            $table->enum('status', ['Pending', 'Processing', 'Completed', 'Cancelled', 'Converted']);
             $table->timestamps();
         });
     }

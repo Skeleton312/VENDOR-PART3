@@ -28,7 +28,7 @@
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                     @error('description') <span class="text-sm text-red-500">{{ $message }}</span> @enderror
                 </div>
-                <p class="font-thin text-gray-500">nb: Tambahkan '{name}' di tempat Anda menginginkan nama untuk di display pada pesan (Misal, ' Selamat siang {name}) dan '\n' untuk baris baru. </p>
+                <p class="font-thin text-gray-500">nb: Tambahkan '{name}' di tempat Anda menginginkan nama untuk di display. Misal, ' Selamat siang {name}</p>
                 <label class="inline-flex items-center cursor-pointer">
                     <input type="checkbox" value="true" class="sr-only peer" wire:model="name_included">
                     <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>

@@ -40,6 +40,18 @@
         </div>
         <!-- Filter Section -->
         <div class="flex gap-4 items-center">
+            <!-- Date From -->
+            <div>
+                <input type="date" 
+                    wire:model.live="filters.date_from" 
+                    class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <!-- Date To -->
+            <div>
+                <input type="date" 
+                    wire:model.live="filters.date_to" 
+                    class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
             <!-- Dropdown -->
             <div>
                 <select 
@@ -47,7 +59,7 @@
                     name="status" 
                     class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     wire:model.live="status">
-                    <option value="all" selected>All Status</option>
+                    <option value="all" selected>All</option>
                     <option value="qualified">Qualified</option>
                     <option value="potential">Potential</option>
                     <option value="follow up">Follow up</option>
