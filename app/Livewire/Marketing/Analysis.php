@@ -75,7 +75,7 @@ class Analysis extends Component
         // Hitung total
         $total_send = $query->count();
         $total_delivered = $query->clone()->where('state', 'delivered')->count();
-        $total_send_customer = $query->distinct('customer_id')->count('customer_id');
+        $total_send_customer = $query->distinct('customer_id')->count();
         $total_sales = $sales->count();
         $salesPerDay = [];
         $messagePerDay = [];

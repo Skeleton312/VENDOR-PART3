@@ -387,14 +387,6 @@
                     x-transition:leave-start="opacity-100 transform translate-y-0"
                     x-transition:leave-end="opacity-0 transform -translate-y-4"
                     class="flex flex-col gap-1 mt-1">
-                    <a href="/reports/sales" class="p-4 rounded"
-                        :class="isActive('/reports/sales') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                        Sales Report
-                    </a>
-                    <a href="/reports/customers" class="p-4 rounded"
-                        :class="isActive('/reports/customers') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
-                        Customer Report
-                    </a>
                     <a href="/reports/marketing" class="p-4 rounded"
                         :class="isActive('/reports/marketing') ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-indigo-50 text-gray-600'">
                         Marketing Report

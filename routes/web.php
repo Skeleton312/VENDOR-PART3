@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Models\MarketingDetail;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\pdfController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\ProductController;
@@ -106,6 +107,12 @@ Route::middleware([
         Route::get('/detail/{campaignId}', [MarketingController::class, 'detailShow'])->name('marketing.detail');
         Route::get('/history', [MarketingController::class, 'historyShow'])->name('message.history');
     });
+    Route::get('/pdf', function () {
+        return view('marketing.marketing-report');
+    })->name('report');
+
+    Route::get('/generate', [pdfController::class, 'generate'])
+    ->name('report');
 
     Route::prefix('leads')->group(function () {
         Route::get('/', [LeadController::class, 'index'])->name('marketing.leads');
@@ -127,8 +134,6 @@ Route::middleware([
 
     // Reports
     Route::prefix('reports')->group(function () {
-        Route::get('/sales', [ReportController::class, 'sales'])->name('reports.sales');
-        Route::get('/customers', [ReportController::class, 'customers'])->name('reports.customers');
         Route::get('/marketing', [ReportController::class, 'marketing'])->name('reports.marketing');
     });
 

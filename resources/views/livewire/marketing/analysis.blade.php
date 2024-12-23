@@ -174,6 +174,9 @@
     },
     options: {
         legend: {display: true}
+    },
+    title: {
+        display: true,
     }
     });
 

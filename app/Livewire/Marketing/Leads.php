@@ -88,7 +88,7 @@ class Leads extends Component
                     $status = 'follow up';
                 } elseif ($deliveredPercentage >= 50 && $deliveredPercentage < 100) {
                     $status = 'potential';
-                } elseif ($deliveredPercentage == 100) {
+                } elseif ($deliveredPercentage == 100 && $messageCount > 6) {
                     $status = 'qualified';
                 }
     
